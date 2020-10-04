@@ -17,10 +17,11 @@
       <p>Session ID</p>
 
       <input v-model="sessionID" />
-
+      <p v-if="sessionIDError.error">{{ sessionIDError.message }}</p>
       <p>Your nickname</p>
 
       <input v-model="nickname" />
+      <p v-if="nicknameError.error">{{ nicknameError.message }}</p>
       <div>
         <button @click="joinSessionHandler">join</button>
       </div>
@@ -28,47 +29,53 @@
   </div>
 </template>
 
-
 <script>
+import io from "socket.io-client";
 export default {
   name: "WelcomeScreen",
   data: function() {
     return {
+      endpoint: "http://localhost:5000",
       sessionID: "",
       nickname: "",
-      sessionIDValidation: {
+      sessionIDError: {
         error: false,
-        message: ""
+        message: "",
       },
-      nicknameValidation: {
+      nicknameError: {
         error: false,
-        message: ""
-      }
+        message: "",
+      },
     };
   },
   methods: {
     newSessionHandler: function() {
-      // generate a sessionID from backend and direct to new page '/sessionid=***-****-***/name=master'
-      const sessionID = "abc-efgh-ijk";
-      this.$router.push(`/master/session/${sessionID}`);
+      // generate a sessionID from backend and direct to new page /master/session/:id
+      let socket;
+      socket = io(this.endpoint);
+      socket.emit("getNewSessionId", {}, ({ id }) => {
+        this.$router.push(`/master/session/${id}`);
+      });
     },
 
     joinSessionHandler: function() {
-      if (!this.sessionIDValidator.error && !this.nicknameValidator.error) {
-        this.$router.push(`/player/${this.nickname}/session/${this.sessionID}`);
+      if (this.nickname.trim() === "") {
+        this.nicknameError.error = true;
+        this.nicknameError.message = "Nickname could not be null";
       }
-    }
-  },
-
-  computed: {
-    sessionIDValidator: function() {
-      // validate sessionID from backend if it is duplicated from any other ongoing session
-      return true;
+      const id = this.sessionID;
+      let socket;
+      socket = io(this.endpoint);
+      socket.emit("checkSessionID", { id }, ({ existed }) => {
+        if (existed) {
+          this.$router.push(
+            `/player/${this.nickname}/session/${this.sessionID}`
+          );
+        }
+        this.sessionIDError.error = true;
+        this.sessionIDError.message = "The session is not existed!";
+      });
     },
-    nicknameValidator: function() {
-      // validate if the nickname is actual empty
-      return true;
-    }
-  }
+  },
 };
 </script>
