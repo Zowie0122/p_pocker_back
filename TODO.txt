@@ -1,0 +1,12 @@
+set up the project and add packages
+set up front-end router with basic page : initial page, master page and player page
+set up back-end, socket.io, confirm server is up and running
+write logic for session id generator in util.js
+logic for master page
+logic for player page
+check requirements
+refactor
+styling front-en10.QA, error handlin11.finish README
+
+Nice to have:
+'join'button will show inactive(grey?) until the user input the right sessionID and validated nickname

@@ -1,0 +1,17 @@
+{
+  "name": "planning-poker",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "Zowie",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js && yarn serve --prefix client"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "socket.io": "^2.3.0"
+  }
+}
