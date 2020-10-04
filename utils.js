@@ -28,7 +28,30 @@ function sessionIDDuplicated(sessionID_array, sessionID) {
   return sessionID_array.includes(sessionID);
 }
 
+function formatVotes(voteInfoObject) {
+  const result = { ...voteInfoObject };
+  for (const player in result) {
+    if (result[player] !== "no vote") {
+      result[player] = "voted";
+    } else {
+      result[player] = "waiting";
+    }
+  }
+  return result;
+}
+
+function isOKtoShowVotes(voteInfoObject) {
+  for (const player in voteInfoObject) {
+    if (voteInfoObject[player] !== "no vote") {
+      return true;
+    }
+  }
+  return false;
+}
+
 module.exports = {
   sessionIdGenerator: sessionIdGenerator,
   sessionIDDuplicated: sessionIDDuplicated,
+  formatVotes: formatVotes,
+  isOKtoShowVotes: isOKtoShowVotes,
 };

@@ -1,4 +1,9 @@
-const { sessionIdGenerator, sessionIDDuplicated } = require("./utils");
+const {
+  sessionIdGenerator,
+  sessionIDDuplicated,
+  formatVotes,
+  isOKtoShowVotes,
+} = require("./utils");
 const cards = require("./cardDeck");
 
 const express = require("express");
@@ -18,10 +23,16 @@ const onGoingSessions = {};
 
 io.on("connection", (socket) => {
   console.log("A new connection started");
+  console.log(onGoingSessions);
   socket.on("getNewSessionId", ({}, callback) => {
     const sessionID = sessionIdGenerator(Object.keys(onGoingSessions));
     //keep track of the issued sessionID
-    onGoingSessions[sessionID] = null;
+    onGoingSessions[sessionID] = {
+      status: "Vote in progress",
+      okToShowVotes: false,
+      votesInfo: {},
+    };
+    console.log(onGoingSessions);
     callback({ id: sessionID });
   });
 
@@ -32,19 +43,41 @@ io.on("connection", (socket) => {
   });
 
   socket.on("playerJoin", ({ id, name }, callback) => {
-    onGoingSessions[id] = { ...onGoingSessions[id], [name]: "waiting" };
-    const result = { ...onGoingSessions[id] };
-    for (const player in result) {
-      if (result[player] !== "waiting") {
-        result[player] === "voted";
-      }
-    }
-    callback({ sessionStatus: result, cardDeck: cards });
+    onGoingSessions[id].votesInfo = {
+      ...onGoingSessions[id].votesInfo,
+      [name]: "no vote",
+    };
+
+    socket.broadcast.emit("updatedSession", {
+      updatedVotesInfo: formatVotes(onGoingSessions[id].votesInfo),
+      // to inform the master if there is more than one player voted
+      okToShowVotes: onGoingSessions[id].okToShowVotes,
+    });
+
+    callback({
+      votesInfo: formatVotes(onGoingSessions[id].votesInfo),
+      // in case the same when a player joins and master completes the vote
+      okToShowVotes: onGoingSessions[id].okToShowVotes,
+      cardDeck: cards,
+    });
   });
 
   socket.on("vote", ({ id, name, card }, callback) => {
-    onGoingSessions[id] = { ...onGoingSessions[id], [name]: card };
-    console.log(onGoingSessions[id]);
+    onGoingSessions[id].votesInfo = {
+      ...onGoingSessions[id].votesInfo,
+      [name]: card,
+    };
+
+    // check if there is more than one player voted
+    onGoingSessions[id].okToShowVotes = isOKtoShowVotes(
+      onGoingSessions[id].votesInfo
+    );
+
+    socket.broadcast.emit("updatedSession", {
+      updatedVotesInfo: formatVotes(onGoingSessions[id].votesInfo),
+      // to inform the master if there is more than one player voted
+      okToShowVotes: onGoingSessions[id].okToShowVotes,
+    });
   });
 
   socket.on("disconnect", () => {

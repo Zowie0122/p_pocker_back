@@ -7,8 +7,8 @@
     <div>
       Now voting
       <ul>
-        <li v-for="(status, name, index) in sessionStatus" :key="index">
-          {{ name }}................{{ status }}
+        <li v-for="(status, name, index) in votesInfo" :key="index">
+          {{ name }}................[{{ status }}]
         </li>
       </ul>
     </div>
@@ -19,9 +19,9 @@
         <li
           v-for="(card, index) in cardDeck"
           :key="index"
-          @click="voteHandler(card)"
+          @click="voteHandler(card, index)"
         >
-          {{ card }}
+          [ {{ card }} ]
         </li>
       </ul>
     </div>
@@ -38,7 +38,7 @@ export default {
       endpoint: "http://localhost:5000",
       sessionID: this.$route.params.id,
       playerName: this.$route.params.name,
-      sessionStatus: {},
+      votesInfo: {},
       cardDeck: [],
     };
   },
@@ -47,8 +47,8 @@ export default {
     const name = this.playerName;
     let socket;
     socket = io(this.endpoint);
-    socket.emit("playerJoin", { id, name }, ({ sessionStatus, cardDeck }) => {
-      this.sessionStatus = sessionStatus;
+    socket.emit("playerJoin", { id, name }, ({ votesInfo, cardDeck }) => {
+      this.votesInfo = votesInfo;
       this.cardDeck = cardDeck;
     });
   },
@@ -60,6 +60,13 @@ export default {
       const name = this.playerName;
       socket.emit("vote", { id, name, card });
     },
+  },
+  mounted() {
+    let socket;
+    socket = io(this.endpoint);
+    socket.on("updatedSession", ({ updatedVotesInfo }) => {
+      this.votesInfo = updatedVotesInfo;
+    });
   },
 };
 </script>
