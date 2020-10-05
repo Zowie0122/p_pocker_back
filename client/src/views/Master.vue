@@ -37,9 +37,19 @@ export default {
       sessionID: this.$route.params.id,
       votesInfo: {},
       sessionStatus: "",
-      okToShowVotes: false,
+      okToShowVotes: false
     };
   },
+
+  // created: function() {
+  //   const id = this.sessionID;
+  //   const name = "master";
+  //   let socket;
+  //   socket = io(this.endpoint);
+  //   socket.emit("join", { id, name }, ({ sessionStatus }) => {
+  //     this.sessionStatus = sessionStatus;
+  //   });
+  // },
   methods: {
     showVotesHandler: function() {
       let socket;
@@ -57,7 +67,7 @@ export default {
       socket.emit("resetVotes", { id }, () => {
         console.log(`session ${id} server handled the resetVotes`);
       });
-    },
+    }
   },
 
   mounted() {
@@ -71,6 +81,6 @@ export default {
         this.okToShowVotes = okToShowVotes;
       }
     );
-  },
+  }
 };
 </script>

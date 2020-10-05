@@ -7,6 +7,7 @@
       <div>
         <button @click="newSessionHandler">start</button>
       </div>
+      <p v-if="sessionIDError.error">{{ sessionIDError.message }}</p>
     </div>
 
     <div>----------------------- OR -----------------------</div>
@@ -30,7 +31,7 @@
 </template>
 
 <script>
-import io from "socket.io-client";
+import axios from "axios";
 import { isValidID, isValidName } from "../utils";
 export default {
   name: "WelcomeScreen",
@@ -39,57 +40,92 @@ export default {
       endpoint: "http://localhost:5000",
       sessionID: "",
       nickname: "",
+      startSessionError: {
+        error: false,
+        message: "",
+      },
+
       sessionIDError: {
         error: false,
-        message: ""
+        message: "",
       },
       nicknameError: {
         error: false,
-        message: ""
-      }
+        message: "",
+      },
     };
   },
   methods: {
-    newSessionHandler: function() {
+    newSessionHandler: async function() {
+      // clear the previous error record if there was
+      this.startSessionError.error = false;
+
       // generate a sessionID from backend and direct to new page /master/session/:id
-      let socket;
-      socket = io(this.endpoint);
-      socket.emit("getNewSessionId", {}, ({ id }) => {
-        this.$router.push(`/master/session/${id}`);
-      });
+      const res = await axios.get(this.endpoint);
+      if (res.data.sessionID) {
+        this.$router.push(`/master/session/${res.data.sessionID}`);
+      } else {
+        this.startSessionError = {
+          error: true,
+          message: "Ohh,There might be a server error",
+        };
+      }
     },
 
-    joinSessionHandler: function() {
+    joinSessionHandler: async function() {
+      // clear the previous error record if there was
+      this.sessionIDError.error = false;
+      this.nicknameError.error = false;
+
+      // check if session id if valid in terms of formatting
       if (!isValidID(this.sessionID)) {
-        this.sessionIDError.error = true;
-        this.sessionIDError.message = "The session id is not valid";
-        console.log("###", isValidID(this.sessionID));
+        this.sessionIDError = {
+          error: true,
+          message: "The session id is not valid",
+        };
       }
+      // check if nickname is actually empty
       if (this.nickname.trim() === "") {
-        this.nicknameError.error = true;
-        this.nicknameError.message = "Nickname could not be null";
-      }
-      if (!isValidName(this.nickname)) {
-        this.nicknameError.error = true;
-        this.nicknameError.message =
-          "Nickname should only contain latin letters (lower or uppercase)";
+        this.nicknameError = {
+          error: true,
+          message: "Nickname could not be null",
+        };
       }
 
-      if (!this.sessionIDError.error && !this.nicknameError.error) {
-        const id = this.sessionID;
-        let socket;
-        socket = io(this.endpoint);
-        socket.emit("checkSessionID", { id }, ({ existed }) => {
-          if (existed) {
-            this.$router.push(
-              `/player/${this.nickname}/session/${this.sessionID}`
-            );
-          }
-          this.sessionIDError.error = true;
-          this.sessionIDError.message = "The session is not existed!";
-        });
+      // check if username contains invalid characters
+      if (!isValidName(this.nickname)) {
+        this.nicknameError = {
+          error: true,
+          message:
+            "Nickname should only contain latin letters (lower or uppercase)",
+        };
       }
-    }
-  }
+
+      // check if the session id is still exsiting
+      if (!this.sessionIDError.error && !this.nicknameError.error) {
+        const res = await axios.post(this.endpoint, {
+          sessionID: this.sessionID,
+        });
+
+        if (res.status === 200 && res.data.isExisting) {
+          this.$router.push(
+            `/player/${this.nickname}/session/${this.sessionID}`
+          );
+        }
+        if (res.status === 200 && !res.data.isExisting) {
+          this.sessionIDError = {
+            error: true,
+            message: "The session is not existed!",
+          };
+        }
+        if (res.status === 400) {
+          this.sessionIDError = {
+            error: true,
+            message: "Ohh,There might be a server error",
+          };
+        }
+      }
+    },
+  },
 };
 </script>

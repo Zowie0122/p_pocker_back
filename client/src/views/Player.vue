@@ -7,8 +7,12 @@
     <div>
       Now voting
       <ul>
-        <li v-for="(status, name, index) in votesInfo" :key="index">
-          {{ name }}................[{{ status }}]
+        <li
+          v-for="(info, index) in votesInfo"
+          :key="index"
+          v-bind:style="{ color: info.colorCode }"
+        >
+          {{ info.name }}................[{{ info.status }}]
         </li>
       </ul>
     </div>
@@ -33,46 +37,53 @@
 
 <script>
 import io from "socket.io-client";
+import { getCurrentPlayerToTop } from "../utils";
+
 export default {
   name: "Player",
 
   data: function() {
     return {
-      endpoint: "http://localhost:5000",
       sessionID: this.$route.params.id,
       playerName: this.$route.params.name,
-      votesInfo: {},
-      cardDeck: ["no vote"],
-      sessionStatus: ""
+      votesInfo: [],
+      cardDeck: [],
+      uid: "",
+      colorCode: "",
+      sessionStatus: "",
+      vote: "no vote",
+      socket: io("http://localhost:5000"),
     };
   },
   created: function() {
-    const id = this.sessionID;
+    const sessionID = this.sessionID;
     const name = this.playerName;
-    let socket;
-    socket = io(this.endpoint);
-    socket.emit("playerJoin", { id, name }, ({ cardDeck, sessionStatus }) => {
-      this.cardDeck = [...this.cardDeck, ...cardDeck];
-      this.sessionStatus = sessionStatus;
+    this.socket.emit(
+      "join",
+      { sessionID, name },
+      ({ sessionObject, cardDeck, uid }) => {
+        console.log(sessionObject);
+        this.sessionStatus = sessionObject.status;
+        this.cardDeck = ["no vote", ...cardDeck];
+        this.uid = uid;
+        this.votesInfo = getCurrentPlayerToTop(uid, sessionObject.votesInfo);
+      }
+    );
+  },
+  mounted() {
+    this.socket.on("updatedSession", ({ sessionObject }) => {
+      console.log("sessionObject Updated", sessionObject);
+      this.votesInfo = getCurrentPlayerToTop(this.uid, sessionObject.votesInfo);
+      this.sessionStatus = sessionObject.status;
     });
   },
   methods: {
     voteHandler: function(card) {
-      let socket;
-      socket = io(this.endpoint);
-      const id = this.sessionID;
-      const name = this.playerName;
-      socket.emit("vote", { id, name, card });
-    }
+      this.vote = card;
+      const sessionID = this.sessionID;
+      const uid = this.uid;
+      this.socket.emit("vote", { sessionID, uid, card });
+    },
   },
-  mounted() {
-    let socket;
-    socket = io(this.endpoint);
-    socket.on("updatedSession", ({ updatedVotesInfo, sessionStatus }) => {
-      this.votesInfo = updatedVotesInfo;
-      this.sessionStatus = sessionStatus;
-      console.log(this.sessionStatus);
-    });
-  }
 };
 </script>

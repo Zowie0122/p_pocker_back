@@ -28,3 +28,17 @@ export function isValidID(id) {
 export function isValidName(name) {
   return !/[^a-zA-Z]/.test(name);
 }
+
+// switch the current user the top of the list
+export function getCurrentPlayerToTop(uid, votesInfoObject) {
+  const result = [];
+  for (const player in votesInfoObject) {
+    if (player === uid) {
+      console.log("matched");
+      result.unshift(votesInfoObject[player]);
+    } else {
+      result.push(votesInfoObject[player]);
+    }
+  }
+  return result;
+}

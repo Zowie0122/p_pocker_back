@@ -28,21 +28,24 @@ function sessionIDDuplicated(sessionID_array, sessionID) {
   return sessionID_array.includes(sessionID);
 }
 
-function formatVotes(voteInfoObject) {
-  const result = { ...voteInfoObject };
-  for (const player in result) {
-    if (result[player] !== "no vote") {
-      result[player] = "voted";
+function formatVotes(object) {
+  const copy = JSON.parse(JSON.stringify(object.votesInfo));
+  if (object.status === "Vote complete") {
+    return object;
+  }
+  for (const player in copy) {
+    if (copy[player].status === "no vote") {
+      copy[player].status = "waiting";
     } else {
-      result[player] = "waiting";
+      copy[player].status = "voted";
     }
   }
-  return result;
+  return { ...object, votesInfo: copy };
 }
 
 function isOKtoShowVotes(voteInfoObject) {
   for (const player in voteInfoObject) {
-    if (voteInfoObject[player] !== "no vote") {
+    if (voteInfoObject[player].status !== "no vote") {
       return true;
     }
   }
@@ -59,10 +62,41 @@ function resetPlayersVotes(voteInfoObject) {
   return result;
 }
 
+function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function getLeaveUserSessionID(uid, sessionsInfoObject) {
+  for (const session in sessionsInfoObject) {
+    for (const player in sessionsInfoObject[session].votesInfo) {
+      if (player === uid) {
+        return session;
+      }
+    }
+  }
+}
+
+function removeUser(uid, sessionID, sessionsInfoObject) {
+  for (const player in sessionsInfoObject[sessionID].votesInfo) {
+    if (player === uid) {
+      delete sessionsInfoObject[sessionID].votesInfo[uid];
+      return;
+    }
+  }
+}
+
 module.exports = {
   sessionIdGenerator: sessionIdGenerator,
   sessionIDDuplicated: sessionIDDuplicated,
   formatVotes: formatVotes,
   isOKtoShowVotes: isOKtoShowVotes,
   resetPlayersVotes: resetPlayersVotes,
+  getRandomColor: getRandomColor,
+  removeUser: removeUser,
+  getLeaveUserSessionID: getLeaveUserSessionID,
 };
