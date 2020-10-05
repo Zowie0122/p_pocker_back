@@ -13,7 +13,7 @@
       </ul>
     </div>
 
-    <div>
+    <template v-if="sessionStatus === 'Vote in progress'">
       Your Vote:
       <ul>
         <li
@@ -24,7 +24,10 @@
           [ {{ card }} ]
         </li>
       </ul>
-    </div>
+    </template>
+    <template v-else>
+      (i) Please wait for the Master to start another vote
+    </template>
   </div>
 </template>
 
@@ -39,7 +42,8 @@ export default {
       sessionID: this.$route.params.id,
       playerName: this.$route.params.name,
       votesInfo: {},
-      cardDeck: [],
+      cardDeck: ["no vote"],
+      sessionStatus: "",
     };
   },
   created: function() {
@@ -47,9 +51,10 @@ export default {
     const name = this.playerName;
     let socket;
     socket = io(this.endpoint);
-    socket.emit("playerJoin", { id, name }, ({ votesInfo, cardDeck }) => {
-      this.votesInfo = votesInfo;
-      this.cardDeck = cardDeck;
+    socket.emit("playerJoin", { id, name }, ({ cardDeck, sessionStatus }) => {
+      // this.votesInfo = votesInfo;
+      this.cardDeck = [...this.cardDeck, ...cardDeck];
+      this.sessionStatus = sessionStatus;
     });
   },
   methods: {
@@ -64,8 +69,10 @@ export default {
   mounted() {
     let socket;
     socket = io(this.endpoint);
-    socket.on("updatedSession", ({ updatedVotesInfo }) => {
+    socket.on("updatedSession", ({ updatedVotesInfo, sessionStatus }) => {
       this.votesInfo = updatedVotesInfo;
+      this.sessionStatus = sessionStatus;
+      console.log(this.sessionStatus);
     });
   },
 };

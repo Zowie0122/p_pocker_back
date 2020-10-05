@@ -5,15 +5,20 @@
     <clock />
     <div>
       <div>Game controls</div>
-      <button>Show Votes</button>
-      <button>Reset Votes</button>
+      <div>
+        <button @click="showVotesHandler">Show Votes</button>
+      </div>
+
+      <div>
+        <button @click="resetVotesHandler">Reset Votes</button>
+      </div>
     </div>
 
     <div>
       Now voting
 
       <ul>
-        <li v-for="(status, name, index) in dammmyPlayersList" :key="index">
+        <li v-for="(status, name, index) in votesInfo" :key="index">
           {{ name }}................{{ status }}
         </li>
       </ul>
@@ -22,20 +27,50 @@
 </template>
 
 <script>
+import io from "socket.io-client";
 export default {
   name: "Master",
 
   data: function() {
     return {
-      dammmyPlayersList: {
-        Alice: "voted",
-        Bob: "waiting",
-        John: "waiting",
-        Mary: "voted",
-        William: "voted"
-      },
-      sessionID: this.$route.params.id
+      endpoint: "http://localhost:5000",
+      sessionID: this.$route.params.id,
+      votesInfo: {},
+      sessionStatus: "",
+      okToShowVotes: false,
     };
-  }
+  },
+  methods: {
+    showVotesHandler: function() {
+      let socket;
+      socket = io(this.endpoint);
+      const id = this.sessionID;
+
+      socket.emit("showVotes", { id }, () => {
+        console.log(`session ${id} server handled the showVotes`);
+      });
+    },
+    resetVotesHandler: function() {
+      let socket;
+      socket = io(this.endpoint);
+      const id = this.sessionID;
+      socket.emit("resetVotes", { id }, () => {
+        console.log(`session ${id} server handled the resetVotes`);
+      });
+    },
+  },
+
+  mounted() {
+    let socket;
+    socket = io(this.endpoint);
+    socket.on(
+      "updatedSession",
+      ({ updatedVotesInfo, sessionStatus, okToShowVotes }) => {
+        this.votesInfo = updatedVotesInfo;
+        this.sessionStatus = sessionStatus;
+        this.okToShowVotes = okToShowVotes;
+      }
+    );
+  },
 };
 </script>

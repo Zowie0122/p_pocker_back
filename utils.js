@@ -49,9 +49,20 @@ function isOKtoShowVotes(voteInfoObject) {
   return false;
 }
 
+function resetPlayersVotes(voteInfoObject) {
+  const result = { ...voteInfoObject };
+  for (const player in result) {
+    if (result[player] !== "no vote") {
+      result[player] = "no vote";
+    }
+  }
+  return result;
+}
+
 module.exports = {
   sessionIdGenerator: sessionIdGenerator,
   sessionIDDuplicated: sessionIDDuplicated,
   formatVotes: formatVotes,
   isOKtoShowVotes: isOKtoShowVotes,
+  resetPlayersVotes: resetPlayersVotes,
 };
