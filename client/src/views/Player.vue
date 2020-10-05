@@ -43,7 +43,7 @@ export default {
       playerName: this.$route.params.name,
       votesInfo: {},
       cardDeck: ["no vote"],
-      sessionStatus: "",
+      sessionStatus: ""
     };
   },
   created: function() {
@@ -52,7 +52,6 @@ export default {
     let socket;
     socket = io(this.endpoint);
     socket.emit("playerJoin", { id, name }, ({ cardDeck, sessionStatus }) => {
-      // this.votesInfo = votesInfo;
       this.cardDeck = [...this.cardDeck, ...cardDeck];
       this.sessionStatus = sessionStatus;
     });
@@ -64,7 +63,7 @@ export default {
       const id = this.sessionID;
       const name = this.playerName;
       socket.emit("vote", { id, name, card });
-    },
+    }
   },
   mounted() {
     let socket;
@@ -74,6 +73,6 @@ export default {
       this.sessionStatus = sessionStatus;
       console.log(this.sessionStatus);
     });
-  },
+  }
 };
 </script>

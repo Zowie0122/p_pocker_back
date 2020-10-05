@@ -31,6 +31,7 @@
 
 <script>
 import io from "socket.io-client";
+import { isValidID, isValidName } from "../utils";
 export default {
   name: "WelcomeScreen",
   data: function() {
@@ -40,12 +41,12 @@ export default {
       nickname: "",
       sessionIDError: {
         error: false,
-        message: "",
+        message: ""
       },
       nicknameError: {
         error: false,
-        message: "",
-      },
+        message: ""
+      }
     };
   },
   methods: {
@@ -59,23 +60,36 @@ export default {
     },
 
     joinSessionHandler: function() {
+      if (!isValidID(this.sessionID)) {
+        this.sessionIDError.error = true;
+        this.sessionIDError.message = "The session id is not valid";
+        console.log("###", isValidID(this.sessionID));
+      }
       if (this.nickname.trim() === "") {
         this.nicknameError.error = true;
         this.nicknameError.message = "Nickname could not be null";
       }
-      const id = this.sessionID;
-      let socket;
-      socket = io(this.endpoint);
-      socket.emit("checkSessionID", { id }, ({ existed }) => {
-        if (existed) {
-          this.$router.push(
-            `/player/${this.nickname}/session/${this.sessionID}`
-          );
-        }
-        this.sessionIDError.error = true;
-        this.sessionIDError.message = "The session is not existed!";
-      });
-    },
-  },
+      if (!isValidName(this.nickname)) {
+        this.nicknameError.error = true;
+        this.nicknameError.message =
+          "Nickname should only contain latin letters (lower or uppercase)";
+      }
+
+      if (!this.sessionIDError.error && !this.nicknameError.error) {
+        const id = this.sessionID;
+        let socket;
+        socket = io(this.endpoint);
+        socket.emit("checkSessionID", { id }, ({ existed }) => {
+          if (existed) {
+            this.$router.push(
+              `/player/${this.nickname}/session/${this.sessionID}`
+            );
+          }
+          this.sessionIDError.error = true;
+          this.sessionIDError.message = "The session is not existed!";
+        });
+      }
+    }
+  }
 };
 </script>
