@@ -44,7 +44,6 @@ export default {
         error: false,
         message: "",
       },
-
       sessionIDError: {
         error: false,
         message: "",
@@ -67,7 +66,7 @@ export default {
       } else {
         this.startSessionError = {
           error: true,
-          message: "Ohh,There might be a server error",
+          message: "Oops,there might be an error,please try again",
         };
       }
     },

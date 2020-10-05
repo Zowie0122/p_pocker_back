@@ -1,11 +1,17 @@
 <template>
   <div>
-    <h1>Player Page</h1>
     <p>Session ID : {{ sessionID }}</p>
     <clock />
 
     <div>
-      Now voting
+      <VoteStatus :session_Status="sessionStatus" />
+      <!-- <p v-if="sessionStatus === 'Vote in progress'">
+        Now voting
+      </p>
+      <p v-if="sessionStatus === 'Vote complete'">
+        Vote complete
+      </p> -->
+
       <ul>
         <li
           v-for="(info, index) in votesInfo"
@@ -38,9 +44,14 @@
 <script>
 import io from "socket.io-client";
 import { getCurrentPlayerToTop } from "../utils";
+import VoteStatus from "../components/VoteStatus.vue";
 
 export default {
   name: "Player",
+
+  components: {
+    VoteStatus,
+  },
 
   data: function() {
     return {
@@ -75,6 +86,9 @@ export default {
       console.log("sessionObject Updated", sessionObject);
       this.votesInfo = getCurrentPlayerToTop(this.uid, sessionObject.votesInfo);
       this.sessionStatus = sessionObject.status;
+      if (this.sessionStatus === "Vote complete") {
+        this.vote = "no vote";
+      }
     });
   },
 

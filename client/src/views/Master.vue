@@ -1,21 +1,19 @@
 <template>
   <div>
-    <h1>Master Page</h1>
     <p>Session ID : {{ sessionID }}</p>
     <clock />
     <div>
-      <div>Game controls</div>
+      <div>Game controls:</div>
       <div>
         <button @click="showVotesHandler">Show Votes</button>
       </div>
-
       <div>
         <button @click="resetVotesHandler">Reset Votes</button>
       </div>
     </div>
 
     <div>
-      Now voting
+      <VoteStatus :session_Status="sessionStatus" />
 
       <ul>
         <li
@@ -33,8 +31,13 @@
 <script>
 import io from "socket.io-client";
 import { removeMaster } from "../utils";
+import VoteStatus from "../components/VoteStatus.vue";
 export default {
   name: "Master",
+
+  components: {
+    VoteStatus,
+  },
 
   data: function() {
     return {

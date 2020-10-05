@@ -9,14 +9,13 @@ export default {
   name: "Clock",
   data: function() {
     return {
-      time: ""
+      time: "",
     };
   },
-
   methods: {
     updateTime: function() {
       const getTime = () => {
-        var cd = new Date();
+        let cd = new Date();
         this.time =
           this.zeroPadding(cd.getHours(), 2) +
           ":" +
@@ -28,15 +27,15 @@ export default {
     },
 
     zeroPadding: function(num, digit) {
-      var zero = "";
-      for (var i = 0; i < digit; i++) {
+      let zero = "";
+      for (let i = 0; i < digit; i++) {
         zero += "0";
       }
       return (zero + num).slice(-digit);
-    }
+    },
   },
   mounted: function() {
     this.updateTime();
-  }
+  },
 };
 </script>
