@@ -3,7 +3,7 @@ const {
   sessionIDDuplicated,
   formatVotes,
   isOKtoShowVotes,
-  resetPlayersVotes,
+  resetSession,
   getRandomColor,
   removeUser,
   getLeaveUserSessionID,
@@ -104,27 +104,22 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("showVotes", ({ id }) => {
-    onGoingSessions[id].status = "Vote complete";
-    socket.broadcast.emit("updatedSession", {
-      updatedVotesInfo: onGoingSessions[id].votesInfo,
-      sessionStatus: onGoingSessions[id].status,
-      okToShowVotes: onGoingSessions[id].okToShowVotes,
+  socket.on("showVotes", ({ sessionID }) => {
+    onGoingSessions[sessionID].status = "Vote complete";
+    const formattedVotes = formatVotes({ ...onGoingSessions[sessionID] });
+    io.in(sessionID).emit("updatedSession", {
+      sessionObject: formattedVotes,
     });
   });
 
-  socket.on("resetVotes", ({ id }) => {
-    onGoingSessions[id].status = "Vote in progress";
-    onGoingSessions[id].okToShowVotes = false;
-    onGoingSessions[id].votesInfo = resetPlayersVotes(
-      onGoingSessions[id].votesInfo
-    );
-    console.log("reseted session info", onGoingSessions[id]);
+  socket.on("resetVotes", ({ sessionID }) => {
+    onGoingSessions[sessionID] = resetSession(onGoingSessions[sessionID]);
 
-    socket.broadcast.emit("updatedSession", {
-      updatedVotesInfo: formatVotes(onGoingSessions[id].votesInfo),
-      sessionStatus: onGoingSessions[id].status,
-      okToShowVotes: onGoingSessions[id].okToShowVotes,
+    console.log("reseted session info", onGoingSessions[sessionID]);
+
+    const formattedVotes = formatVotes({ ...onGoingSessions[sessionID] });
+    io.in(sessionID).emit("updatedSession", {
+      sessionObject: formattedVotes,
     });
   });
 

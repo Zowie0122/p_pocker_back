@@ -18,8 +18,12 @@
       Now voting
 
       <ul>
-        <li v-for="(status, name, index) in votesInfo" :key="index">
-          {{ name }}................{{ status }}
+        <li
+          v-for="(info, index) in votesInfo"
+          :key="index"
+          v-bind:style="{ color: info.colorCode }"
+        >
+          {{ info.name }}................[{{ info.status }}]
         </li>
       </ul>
     </div>
@@ -28,59 +32,48 @@
 
 <script>
 import io from "socket.io-client";
+import { removeMaster } from "../utils";
 export default {
   name: "Master",
 
   data: function() {
     return {
-      endpoint: "http://localhost:5000",
       sessionID: this.$route.params.id,
-      votesInfo: {},
+      votesInfo: [],
       sessionStatus: "",
-      okToShowVotes: false
+      uid: "",
+      okToShowVotes: false,
+      socket: io("http://localhost:5000"),
     };
   },
 
-  // created: function() {
-  //   const id = this.sessionID;
-  //   const name = "master";
-  //   let socket;
-  //   socket = io(this.endpoint);
-  //   socket.emit("join", { id, name }, ({ sessionStatus }) => {
-  //     this.sessionStatus = sessionStatus;
-  //   });
-  // },
+  created: function() {
+    const sessionID = this.sessionID;
+    const name = "00000";
+    this.socket.emit("join", { sessionID, name }, ({ sessionObject, uid }) => {
+      this.sessionStatus = sessionObject.status;
+      this.uid = uid;
+      this.votesInfo = removeMaster(uid, sessionObject.votesInfo);
+    });
+  },
+
   methods: {
     showVotesHandler: function() {
-      let socket;
-      socket = io(this.endpoint);
-      const id = this.sessionID;
-
-      socket.emit("showVotes", { id }, () => {
-        console.log(`session ${id} server handled the showVotes`);
-      });
+      const sessionID = this.sessionID;
+      this.socket.emit("showVotes", { sessionID });
     },
     resetVotesHandler: function() {
-      let socket;
-      socket = io(this.endpoint);
-      const id = this.sessionID;
-      socket.emit("resetVotes", { id }, () => {
-        console.log(`session ${id} server handled the resetVotes`);
-      });
-    }
+      const sessionID = this.sessionID;
+      this.socket.emit("resetVotes", { sessionID });
+    },
   },
 
   mounted() {
-    let socket;
-    socket = io(this.endpoint);
-    socket.on(
-      "updatedSession",
-      ({ updatedVotesInfo, sessionStatus, okToShowVotes }) => {
-        this.votesInfo = updatedVotesInfo;
-        this.sessionStatus = sessionStatus;
-        this.okToShowVotes = okToShowVotes;
-      }
-    );
-  }
+    this.socket.on("updatedSession", ({ sessionObject }) => {
+      this.sessionStatus = sessionObject.status;
+      this.okToShowVotes = sessionObject.okToShowVotes;
+      this.votesInfo = removeMaster(this.uid, sessionObject.votesInfo);
+    });
+  },
 };
 </script>

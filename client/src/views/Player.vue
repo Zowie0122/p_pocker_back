@@ -19,15 +19,15 @@
 
     <template v-if="sessionStatus === 'Vote in progress'">
       Your Vote:
-      <ul>
-        <li
-          v-for="(card, index) in cardDeck"
+      <div>
+        <div
+          v-for="(card, index) in cards"
           :key="index"
-          @click="voteHandler(card, index)"
+          @click="voteHandler(index)"
         >
           [ {{ card }} ]
-        </li>
-      </ul>
+        </div>
+      </div>
     </template>
     <template v-else>
       (i) Please wait for the Master to start another vote
@@ -77,11 +77,27 @@ export default {
       this.sessionStatus = sessionObject.status;
     });
   },
+
+  computed: {
+    cards: function() {
+      const result = [];
+      for (const card of this.cardDeck) {
+        if (card === this.vote) {
+          result.push(`>${card}<`);
+        } else {
+          result.push(card);
+        }
+      }
+      return result;
+    },
+  },
+
   methods: {
-    voteHandler: function(card) {
-      this.vote = card;
+    voteHandler: function(index) {
+      this.vote = this.cardDeck[index];
       const sessionID = this.sessionID;
       const uid = this.uid;
+      const card = this.vote;
       this.socket.emit("vote", { sessionID, uid, card });
     },
   },

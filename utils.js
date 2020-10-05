@@ -52,14 +52,16 @@ function isOKtoShowVotes(voteInfoObject) {
   return false;
 }
 
-function resetPlayersVotes(voteInfoObject) {
-  const result = { ...voteInfoObject };
-  for (const player in result) {
-    if (result[player] !== "no vote") {
-      result[player] = "no vote";
+function resetSession(session) {
+  session.status = "Vote in progress";
+  session.okToShowVotes = false;
+
+  for (const player in session.votesInfo) {
+    if (session.votesInfo[player].status !== "no vote") {
+      session.votesInfo[player].status = "no vote";
     }
   }
-  return result;
+  return session;
 }
 
 function getRandomColor() {
@@ -95,7 +97,7 @@ module.exports = {
   sessionIDDuplicated: sessionIDDuplicated,
   formatVotes: formatVotes,
   isOKtoShowVotes: isOKtoShowVotes,
-  resetPlayersVotes: resetPlayersVotes,
+  resetSession: resetSession,
   getRandomColor: getRandomColor,
   removeUser: removeUser,
   getLeaveUserSessionID: getLeaveUserSessionID,

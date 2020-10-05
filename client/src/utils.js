@@ -33,10 +33,20 @@ export function isValidName(name) {
 export function getCurrentPlayerToTop(uid, votesInfoObject) {
   const result = [];
   for (const player in votesInfoObject) {
-    if (player === uid) {
-      console.log("matched");
+    if (player === uid && votesInfoObject[player].name !== "00000") {
       result.unshift(votesInfoObject[player]);
-    } else {
+    } else if (player !== uid && votesInfoObject[player].name !== "00000") {
+      result.push(votesInfoObject[player]);
+    }
+  }
+  return result;
+}
+
+// remove master
+export function removeMaster(uid, votesInfoObject) {
+  const result = [];
+  for (const player in votesInfoObject) {
+    if (player !== uid) {
       result.push(votesInfoObject[player]);
     }
   }
