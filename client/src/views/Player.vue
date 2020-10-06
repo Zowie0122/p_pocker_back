@@ -96,7 +96,6 @@ export default {
         this.isMasterLeft = true;
         alert("Master Left");
       }
-
       this.votesInfo = getCurrentPlayerToTop(this.uid, sessionObject.votesInfo);
       this.sessionStatus = sessionObject.status;
       if (this.sessionStatus === "Vote complete") {

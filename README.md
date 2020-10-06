@@ -17,7 +17,7 @@ yarn install
 To Start the server
 
 ```bash
-yarn serve
+yarn start
 ```
 
 To Start the front-end
