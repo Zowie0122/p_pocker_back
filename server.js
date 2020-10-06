@@ -20,6 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
+
 //to store the sessions data
 const onGoingSessions = {};
 
@@ -56,7 +57,6 @@ app.post("/", async (req, res) => {
 
 io.on("connection", (socket) => {
   console.log(`${socket.id} connection started`);
-
   // when players join a session
   socket.on("join", ({ sessionID, name }, callback) => {
     if (!onGoingSessions[sessionID]) {
@@ -123,13 +123,18 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`${socket.id} leaves connection`);
     const sessionID = getLeaveUserSessionID(socket.id, onGoingSessions);
+
     if (onGoingSessions[sessionID]) {
       // remove user when left
+      // check if the user is master of the session
+      const isMaster =
+        onGoingSessions[sessionID].votesInfo[socket.id].name === "00000";
       removeUser(socket.id, sessionID, onGoingSessions);
       const formattedVotes = formatVotes(onGoingSessions[sessionID]);
       // update the other players in the session
       io.in(sessionID).emit("updatedSession", {
         sessionObject: formattedVotes,
+        isMaster,
       });
     }
   });

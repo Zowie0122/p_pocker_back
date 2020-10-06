@@ -55,6 +55,7 @@ export default {
       votesInfo: [],
       cardDeck: [],
       vote: "no vote",
+      isMasterLeft: false,
       socket: io("http://localhost:5000"),
     };
   },
@@ -90,7 +91,12 @@ export default {
   },
 
   mounted() {
-    this.socket.on("updatedSession", ({ sessionObject }) => {
+    this.socket.on("updatedSession", ({ sessionObject, isMaster }) => {
+      if (isMaster !== undefined && isMaster) {
+        this.isMasterLeft = true;
+        alert("Master Left");
+      }
+
       this.votesInfo = getCurrentPlayerToTop(this.uid, sessionObject.votesInfo);
       this.sessionStatus = sessionObject.status;
       if (this.sessionStatus === "Vote complete") {
