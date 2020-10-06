@@ -1,29 +1,31 @@
 <template>
-  <div>
-    <p>Session ID : {{ sessionID }}</p>
+  <div id="container">
     <clock />
-    <div>
-      <div>Game controls:</div>
-      <div>
-        <button @click="showVotesHandler">Show Votes</button>
-      </div>
-      <div>
-        <button @click="resetVotesHandler">Reset Votes</button>
-      </div>
-    </div>
+    <h2 class="m-3">Session ID : {{ sessionID }}</h2>
+
+    <h5>
+      Game controls:
+    </h5>
+
+    <b-button
+      v-if="okToShowVotes"
+      class="m-3"
+      variant="primary"
+      @click="showVotesHandler"
+      >Show Votes</b-button
+    >
+
+    <b-button v-if="!okToShowVotes" class="m-3" @click="showVotesHandler"
+      >Show Votes</b-button
+    >
+
+    <b-button class="m-3" variant="warning" @click="resetVotesHandler"
+      >Reset Votes</b-button
+    >
 
     <div>
-      <VoteStatus :session_Status="sessionStatus" />
-
-      <ul>
-        <li
-          v-for="(info, index) in votesInfo"
-          :key="index"
-          v-bind:style="{ color: info.colorCode }"
-        >
-          {{ info.name }}................[{{ info.status }}]
-        </li>
-      </ul>
+      <vote-status :session_status="sessionStatus" />
+      <player-list :votes_info="votesInfo" />
     </div>
   </div>
 </template>
@@ -32,42 +34,47 @@
 import io from "socket.io-client";
 import { removeMaster } from "../utils";
 import VoteStatus from "../components/VoteStatus.vue";
+import PlayerList from "../components/PlayerList.vue";
 export default {
   name: "Master",
 
   components: {
     VoteStatus,
+    PlayerList,
   },
 
   data: function() {
     return {
       sessionID: this.$route.params.id,
       votesInfo: [],
-      sessionStatus: "",
       uid: "",
+      sessionStatus: "",
       okToShowVotes: false,
       socket: io("http://localhost:5000"),
     };
   },
 
   created: function() {
-    const sessionID = this.sessionID;
-    const name = "00000";
-    this.socket.emit("join", { sessionID, name }, ({ sessionObject, uid }) => {
-      this.sessionStatus = sessionObject.status;
-      this.uid = uid;
-      this.votesInfo = removeMaster(uid, sessionObject.votesInfo);
-    });
+    // to register master as name of 00000, differentiate from players just in case if there are some uses
+    this.socket.emit(
+      "join",
+      { sessionID: this.sessionID, name: "00000" },
+      ({ sessionObject, uid }) => {
+        this.sessionStatus = sessionObject.status;
+        this.uid = uid;
+        this.votesInfo = removeMaster(uid, sessionObject.votesInfo);
+      }
+    );
   },
 
   methods: {
     showVotesHandler: function() {
-      const sessionID = this.sessionID;
-      this.socket.emit("showVotes", { sessionID });
+      if (this.okToShowVotes) {
+        this.socket.emit("showVotes", { sessionID: this.sessionID });
+      }
     },
     resetVotesHandler: function() {
-      const sessionID = this.sessionID;
-      this.socket.emit("resetVotes", { sessionID });
+      this.socket.emit("resetVotes", { sessionID: this.sessionID });
     },
   },
 
@@ -80,3 +87,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#container {
+  text-align: center;
+}
+</style>

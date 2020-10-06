@@ -1,6 +1,8 @@
 <template>
   <div>
-    {{ time }}
+    <h1 class="timer p-4">
+      {{ time }}
+    </h1>
   </div>
 </template>
 
@@ -39,3 +41,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.timer {
+  text-align: end;
+  color: #c62a88;
+  font-size: 3wh;
+}
+</style>

@@ -1,33 +1,71 @@
 <template>
-  <div>
+  <b-jumbotron class="app">
     <h1>Welcome to the Planning Poker!</h1>
     <div>
       <h2>Start a new Planning poker session</h2>
       <p>you will be the Game Master</p>
       <div>
-        <button @click="newSessionHandler">start</button>
+        <b-button
+          variant="info"
+          class="m-3"
+          size="lg"
+          @click="newSessionHandler"
+          >start</b-button
+        >
       </div>
-      <p v-if="sessionIDError.error">{{ sessionIDError.message }}</p>
+      <b-alert
+        class="m-2 w-25 mx-auto"
+        show
+        variant="danger"
+        v-if="startSessionError.error"
+        >{{ startSessionError.message }}</b-alert
+      >
     </div>
 
-    <div>----------------------- OR -----------------------</div>
+    <div class="m-5">----------------------- OR -----------------------</div>
 
     <div>
       <h2>Join an existing Session</h2>
       <p>you'll need a Session ID provided to you by the Game Master</p>
-      <p>Session ID</p>
 
-      <input v-model="sessionID" />
-      <p v-if="sessionIDError.error">{{ sessionIDError.message }}</p>
-      <p>Your nickname</p>
+      <div class="m-3">
+        <p>Session ID</p>
+        <b-input-group class="w-25 mx-auto">
+          <b-form-input v-model="sessionID"></b-form-input>
+        </b-input-group>
+        <b-alert
+          class="m-2 w-25 mx-auto"
+          show
+          variant="danger"
+          v-if="sessionIDError.error"
+          >{{ sessionIDError.message }}</b-alert
+        >
+      </div>
 
-      <input v-model="nickname" />
-      <p v-if="nicknameError.error">{{ nicknameError.message }}</p>
-      <div>
-        <button @click="joinSessionHandler">join</button>
+      <div class="m-3">
+        <p>Your nickname</p>
+        <b-input-group class="w-25 mx-auto">
+          <b-form-input v-model="nickname"></b-form-input>
+        </b-input-group>
+        <b-alert
+          class="m-2 w-25 mx-auto"
+          show
+          variant="danger"
+          v-if="nicknameError.error"
+          >{{ nicknameError.message }}</b-alert
+        >
+        <div>
+          <b-button
+            variant="primary"
+            class="m-3"
+            size="lg"
+            @click="joinSessionHandler"
+            >join</b-button
+          >
+        </div>
       </div>
     </div>
-  </div>
+  </b-jumbotron>
 </template>
 
 <script>
@@ -128,3 +166,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.app {
+  text-align: center;
+}
+</style>

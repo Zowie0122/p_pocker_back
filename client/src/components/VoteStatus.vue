@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <p v-if="session_Status === 'Vote in progress'">
+  <div class="m-3">
+    <h5 v-if="session_status === 'Vote in progress'">
       Now voting
-    </p>
-    <p v-if="session_Status === 'Vote complete'">
+    </h5>
+    <h5 v-if="session_status === 'Vote complete'">
       Vote complete
-    </p>
+    </h5>
   </div>
 </template>
 
@@ -13,7 +13,7 @@
 export default {
   name: "VoteStatus",
   props: {
-    session_Status: String,
+    session_status: String,
   },
 };
 </script>

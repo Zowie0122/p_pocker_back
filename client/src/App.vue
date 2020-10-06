@@ -1,11 +1,8 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      Planning Poker
-    </div>
+  <div>
+    <b-navbar type="dark" variant="dark">
+      <b-navbar-brand> Planning Poker</b-navbar-brand>
+    </b-navbar>
     <router-view />
   </div>
 </template>
-
-<style>
-</style>
