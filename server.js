@@ -63,28 +63,32 @@ io.on("connection", (socket) => {
 
   // when players join a session
   socket.on("join", ({ sessionID, name }, callback) => {
-    // add initial player info
-    onGoingSessions[sessionID].votesInfo = {
-      ...onGoingSessions[sessionID].votesInfo,
-      [socket.id.toString()]: {
-        status: "no vote",
-        name: name,
-        colorCode: getRandomColor(),
-      },
-    };
+    if (!onGoingSessions[sessionID]) {
+      callback({ error: "Valid session id accessing server" });
+    } else {
+      // add initial player info
+      onGoingSessions[sessionID].votesInfo = {
+        ...onGoingSessions[sessionID].votesInfo,
+        [socket.id.toString()]: {
+          status: "no vote",
+          name: name,
+          colorCode: getRandomColor(),
+        },
+      };
 
-    socket.join(sessionID);
-    const formattedVotes = formatVotes({ ...onGoingSessions[sessionID] });
+      socket.join(sessionID);
+      const formattedVotes = formatVotes({ ...onGoingSessions[sessionID] });
 
-    io.in(sessionID).emit("updatedSession", {
-      sessionObject: formattedVotes,
-    });
+      io.in(sessionID).emit("updatedSession", {
+        sessionObject: formattedVotes,
+      });
 
-    callback({
-      sessionObject: formattedVotes,
-      cardDeck: cards,
-      uid: socket.id,
-    });
+      callback({
+        sessionObject: formattedVotes,
+        cardDeck: cards,
+        uid: socket.id,
+      });
+    }
   });
 
   socket.on("vote", ({ sessionID, uid, card }) => {
@@ -126,13 +130,15 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`${socket.id} leaves connection`);
     const sessionID = getLeaveUserSessionID(socket.id, onGoingSessions);
-    // remove user when left
-    removeUser(socket.id, sessionID, onGoingSessions);
-    const formattedVotes = formatVotes(onGoingSessions[sessionID]);
-    // update the other players in the session
-    socket.broadcast.emit("updatedSession", {
-      sessionObject: formattedVotes,
-    });
+    if (onGoingSessions[sessionID]) {
+      // remove user when left
+      removeUser(socket.id, sessionID, onGoingSessions);
+      const formattedVotes = formatVotes(onGoingSessions[sessionID]);
+      // update the other players in the session
+      socket.broadcast.emit("updatedSession", {
+        sessionObject: formattedVotes,
+      });
+    }
   });
 });
 

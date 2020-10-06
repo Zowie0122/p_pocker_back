@@ -34,6 +34,7 @@ export function getCurrentPlayerToTop(uid, votesInfoObject) {
   const result = [];
   for (const player in votesInfoObject) {
     if (player === uid && votesInfoObject[player].name !== "00000") {
+      votesInfoObject[player].name = "*" + votesInfoObject[player].name;
       result.unshift(votesInfoObject[player]);
     } else if (player !== uid && votesInfoObject[player].name !== "00000") {
       result.push(votesInfoObject[player]);

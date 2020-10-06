@@ -35,6 +35,7 @@ import io from "socket.io-client";
 import { getCurrentPlayerToTop } from "../utils";
 import VoteStatus from "../components/VoteStatus.vue";
 import PlayerList from "../components/PlayerList.vue";
+import { isValidID, isValidName } from "../utils";
 
 export default {
   name: "Player",
@@ -58,16 +59,33 @@ export default {
   },
 
   created: function() {
-    this.socket.emit(
-      "join",
-      { sessionID: this.sessionID, name: this.playerName },
-      ({ sessionObject, cardDeck, uid }) => {
-        this.sessionStatus = sessionObject.status;
-        this.cardDeck = ["no vote", ...cardDeck];
-        this.uid = uid;
-        this.votesInfo = getCurrentPlayerToTop(uid, sessionObject.votesInfo);
-      }
-    );
+    // if a user jump in by url , check if it is valid
+
+    if (
+      !isValidID(this.sessionID) ||
+      this.playerName.trim() === "" ||
+      !isValidName(this.playerName)
+    ) {
+      this.$router.push("/");
+    } else {
+      this.socket.emit(
+        "join",
+        { sessionID: this.sessionID, name: this.playerName },
+        ({ sessionObject, cardDeck, uid }) => {
+          if (!sessionObject) {
+            this.$router.push("/");
+          } else {
+            this.sessionStatus = sessionObject.status;
+            this.cardDeck = ["no vote", ...cardDeck];
+            this.uid = uid;
+            this.votesInfo = getCurrentPlayerToTop(
+              uid,
+              sessionObject.votesInfo
+            );
+          }
+        }
+      );
+    }
   },
 
   mounted() {
