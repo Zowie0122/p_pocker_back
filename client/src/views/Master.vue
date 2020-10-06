@@ -14,11 +14,8 @@
       @click="showVotesHandler"
       >Show Votes</b-button
     >
-
-    <b-button v-if="!okToShowVotes" class="m-3" @click="showVotesHandler"
-      >Show Votes</b-button
-    >
-
+    <!--When there is no one voted, the button is grey and not active -->
+    <b-button v-if="!okToShowVotes" class="m-3">Show Votes</b-button>
     <b-button class="m-3" variant="warning" @click="resetVotesHandler"
       >Reset Votes</b-button
     >
@@ -74,9 +71,7 @@ export default {
 
   methods: {
     showVotesHandler: function() {
-      if (this.okToShowVotes) {
-        this.socket.emit("showVotes", { sessionID: this.sessionID });
-      }
+      this.socket.emit("showVotes", { sessionID: this.sessionID });
     },
     resetVotesHandler: function() {
       this.socket.emit("resetVotes", { sessionID: this.sessionID });

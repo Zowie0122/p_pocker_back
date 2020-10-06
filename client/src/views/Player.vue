@@ -22,6 +22,7 @@
         </b-button>
       </div>
     </template>
+
     <template v-else>
       <h6>
         (i) Please wait for the Master to start another vote

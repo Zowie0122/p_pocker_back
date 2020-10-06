@@ -21,13 +21,14 @@
         >{{ startSessionError.message }}</b-alert
       >
     </div>
+
     <hr />
     <p class="m-5">OR</p>
     <hr />
+
     <div>
       <h2>Join an existing Session</h2>
       <p>you'll need a Session ID provided to you by the Game Master</p>
-
       <div class="m-3">
         <p>Session ID</p>
         <b-input-group class="w-50 mb-1 mx-auto">
@@ -41,7 +42,6 @@
           >{{ sessionIDError.message }}</b-alert
         >
       </div>
-
       <div class="m-3">
         <p>Your nickname</p>
         <b-input-group class="w-50 mb-1 mx-auto">
@@ -96,7 +96,6 @@ export default {
     newSessionHandler: async function() {
       // clear the previous error record if there was
       this.startSessionError.error = false;
-
       // generate a sessionID from backend and direct to new page /master/session/:id
       const res = await axios.get(this.endpoint);
       if (res.data.sessionID) {
@@ -113,7 +112,6 @@ export default {
       // clear the previous error record if there was
       this.sessionIDError.error = false;
       this.nicknameError.error = false;
-
       // check if session id if valid in terms of formatting
       if (!isValidID(this.sessionID)) {
         this.sessionIDError = {
@@ -128,7 +126,6 @@ export default {
           message: "Nickname could not be null",
         };
       }
-
       // check if username contains invalid characters
       if (!isValidName(this.nickname)) {
         this.nicknameError = {
@@ -137,7 +134,6 @@ export default {
             "Nickname should only contain latin letters (lower or uppercase)",
         };
       }
-
       // check if the session id is still exsiting
       if (!this.sessionIDError.error && !this.nicknameError.error) {
         const res = await axios.post(this.endpoint, {
@@ -155,6 +151,7 @@ export default {
             message: "The session is not existed!",
           };
         }
+        //error handling
         if (res.status === 400) {
           this.sessionIDError = {
             error: true,

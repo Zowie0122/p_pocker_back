@@ -9,9 +9,7 @@ const {
   getLeaveUserSessionID,
 } = require("./utils");
 const cards = require("./cardDeck");
-
 const express = require("express");
-
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -25,12 +23,11 @@ const PORT = process.env.PORT || 5000;
 //to store the sessions data
 const onGoingSessions = {};
 
-// for master to start a session
+// for master to get a session id to start a session
 app.get("/", async (req, res) => {
   try {
     // generate a new session id
     const sessionID = sessionIdGenerator(Object.keys(onGoingSessions));
-
     // add to sessions collection and get initial set-up
     onGoingSessions[sessionID] = {
       status: "Vote in progress",
@@ -51,7 +48,6 @@ app.post("/", async (req, res) => {
       Object.keys(onGoingSessions),
       sessionID
     );
-    console.log(isExisting);
     res.status(200).json({ isExisting: isExisting });
   } catch (error) {
     res.status(400).json({ message: "Server Error" });
@@ -66,7 +62,7 @@ io.on("connection", (socket) => {
     if (!onGoingSessions[sessionID]) {
       callback({ error: "Valid session id accessing server" });
     } else {
-      // add initial player info
+      // set/add initial player info
       onGoingSessions[sessionID].votesInfo = {
         ...onGoingSessions[sessionID].votesInfo,
         [socket.id.toString()]: {
@@ -118,9 +114,6 @@ io.on("connection", (socket) => {
 
   socket.on("resetVotes", ({ sessionID }) => {
     onGoingSessions[sessionID] = resetSession(onGoingSessions[sessionID]);
-
-    console.log("reseted session info", onGoingSessions[sessionID]);
-
     const formattedVotes = formatVotes({ ...onGoingSessions[sessionID] });
     io.in(sessionID).emit("updatedSession", {
       sessionObject: formattedVotes,
@@ -142,6 +135,7 @@ io.on("connection", (socket) => {
   });
 });
 
+// for production deployment
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
   const path = require("path");
