@@ -21,20 +21,20 @@
         >{{ startSessionError.message }}</b-alert
       >
     </div>
-
-    <div class="m-5">----------------------- OR -----------------------</div>
-
+    <hr />
+    <p class="m-5">OR</p>
+    <hr />
     <div>
       <h2>Join an existing Session</h2>
       <p>you'll need a Session ID provided to you by the Game Master</p>
 
       <div class="m-3">
         <p>Session ID</p>
-        <b-input-group class="w-25 mx-auto">
+        <b-input-group class="w-50 mb-1 mx-auto">
           <b-form-input v-model="sessionID"></b-form-input>
         </b-input-group>
         <b-alert
-          class="m-2 w-25 mx-auto"
+          class="w-50 mb-1 mx-auto"
           show
           variant="danger"
           v-if="sessionIDError.error"
@@ -44,11 +44,11 @@
 
       <div class="m-3">
         <p>Your nickname</p>
-        <b-input-group class="w-25 mx-auto">
+        <b-input-group class="w-50 mb-1 mx-auto">
           <b-form-input v-model="nickname"></b-form-input>
         </b-input-group>
         <b-alert
-          class="m-2 w-25 mx-auto"
+          class="w-50 mb-1 mx-auto"
           show
           variant="danger"
           v-if="nicknameError.error"
