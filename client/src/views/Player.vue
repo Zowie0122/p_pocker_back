@@ -60,7 +60,6 @@ export default {
 
   created: function() {
     // if a user jump in by url , check if it is valid
-
     if (
       !isValidID(this.sessionID) ||
       this.playerName.trim() === "" ||
@@ -72,6 +71,7 @@ export default {
         "join",
         { sessionID: this.sessionID, name: this.playerName },
         ({ sessionObject, cardDeck, uid }) => {
+          // if the session id is not existed, send user back to home page
           if (!sessionObject) {
             this.$router.push("/");
           } else {

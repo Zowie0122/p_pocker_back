@@ -60,7 +60,7 @@ export default {
       "join",
       { sessionID: this.sessionID, name: "00000" },
       ({ sessionObject, uid }) => {
-        // if a user try to use url to access an session id which not exisited
+        // if a user try to use url to access an session id which not exisited, then send back to homepage
         if (!sessionObject) {
           this.$router.push("/");
         } else {

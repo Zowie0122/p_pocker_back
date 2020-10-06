@@ -5,8 +5,7 @@
   "author": "Zowie",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js && yarn serve --prefix client"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

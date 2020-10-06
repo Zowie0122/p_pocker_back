@@ -6,7 +6,6 @@ logic for master page
 logic for player page
 check requirements
 refactor
-styling front-en10.QA, error handlin11.finish README
-
-Nice to have:
-'join'button will show inactive(grey?) until the user input the right sessionID and validated nickname
+styling front-en
+QA, error handlin
+finish README

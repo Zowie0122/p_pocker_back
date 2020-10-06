@@ -135,7 +135,7 @@ io.on("connection", (socket) => {
       removeUser(socket.id, sessionID, onGoingSessions);
       const formattedVotes = formatVotes(onGoingSessions[sessionID]);
       // update the other players in the session
-      socket.broadcast.emit("updatedSession", {
+      io.in(sessionID).emit("updatedSession", {
         sessionObject: formattedVotes,
       });
     }

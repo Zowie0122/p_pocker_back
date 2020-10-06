@@ -15,18 +15,12 @@ const routes = [
   {
     path: "/master",
     name: "Master",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Master,
     children: [{ path: "session/:id", component: Master }],
   },
   {
     path: "/player/:name",
     name: "Player",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Player,
     children: [{ path: "session/:id", component: Player }],
   },
