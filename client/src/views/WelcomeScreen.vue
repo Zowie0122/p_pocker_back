@@ -75,21 +75,21 @@ export default {
   name: "WelcomeScreen",
   data: function() {
     return {
-      endpoint: "http://localhost:5000",
+      endpoint: "/",
       sessionID: "",
       nickname: "",
       startSessionError: {
         error: false,
-        message: "",
+        message: ""
       },
       sessionIDError: {
         error: false,
-        message: "",
+        message: ""
       },
       nicknameError: {
         error: false,
-        message: "",
-      },
+        message: ""
+      }
     };
   },
   methods: {
@@ -103,7 +103,7 @@ export default {
       } else {
         this.startSessionError = {
           error: true,
-          message: "Oops,there might be an error,please try again",
+          message: "Oops,there might be an error,please try again"
         };
       }
     },
@@ -116,14 +116,14 @@ export default {
       if (!isValidID(this.sessionID)) {
         this.sessionIDError = {
           error: true,
-          message: "The session id is not valid",
+          message: "The session id is not valid"
         };
       }
       // check if nickname is actually empty
       if (this.nickname.trim() === "") {
         this.nicknameError = {
           error: true,
-          message: "Nickname could not be null",
+          message: "Nickname could not be null"
         };
       }
       // check if username contains invalid characters
@@ -131,13 +131,13 @@ export default {
         this.nicknameError = {
           error: true,
           message:
-            "Nickname should only contain latin letters (lower or uppercase)",
+            "Nickname should only contain latin letters (lower or uppercase)"
         };
       }
       // check if the session id is still exsiting
       if (!this.sessionIDError.error && !this.nicknameError.error) {
         const res = await axios.post(this.endpoint, {
-          sessionID: this.sessionID,
+          sessionID: this.sessionID
         });
 
         if (res.status === 200 && res.data.isExisting) {
@@ -148,19 +148,19 @@ export default {
         if (res.status === 200 && !res.data.isExisting) {
           this.sessionIDError = {
             error: true,
-            message: "The session is not existed!",
+            message: "The session is not existed!"
           };
         }
         //error handling
         if (res.status === 400) {
           this.sessionIDError = {
             error: true,
-            message: "Ohh,There might be a server error",
+            message: "Ohh,There might be a server error"
           };
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -32,13 +32,13 @@ yarn serve
 Multiple users in the same vote session
 
 <p align="center">
-  <img src="./client/src/assets/Demo1.gif" width="750" title="demo1">
+  <img src="./assets/Demo1.gif" width="750" title="demo1">
 </p>
 
 Multiple sessions at the same time
 
 <p align="center">
-  <img src="./client/src/assets/Demo2.gif" width="750" title="demo2">
+  <img src="./assets/Demo2.gif" width="750" title="demo2">
 </p>
 
 ## Customization

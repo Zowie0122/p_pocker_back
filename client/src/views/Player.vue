@@ -57,7 +57,7 @@ export default {
       cardDeck: [],
       vote: "no vote",
       isMasterLeft: false,
-      socket: io("http://localhost:5000")
+      socket: io("/")
     };
   },
 
@@ -74,9 +74,10 @@ export default {
         "join",
         { sessionID: this.sessionID, name: this.playerName },
         ({ sessionObject, cardDeck, uid }) => {
+          console.log("###", sessionObject);
           // if the session id is not existed, send user back to home page
           if (!sessionObject) {
-            this.$router.push("/");
+            this.$router.push("/welcome");
           } else {
             this.sessionStatus = sessionObject.status;
             this.cardDeck = ["no vote", ...cardDeck];

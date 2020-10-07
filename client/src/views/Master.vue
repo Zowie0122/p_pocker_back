@@ -47,7 +47,7 @@ export default {
       uid: "",
       sessionStatus: "",
       okToShowVotes: false,
-      socket: io("http://localhost:5000")
+      socket: io("/")
     };
   },
 
@@ -59,7 +59,7 @@ export default {
       ({ sessionObject, uid }) => {
         // if a user try to use url to access an session id which not exisited, then send back to homepage
         if (!sessionObject) {
-          this.$router.push("/");
+          this.$router.push("/welcome");
         } else {
           this.sessionStatus = sessionObject.status;
           this.uid = uid;

@@ -16,13 +16,13 @@ export default {
   },
   methods: {
     updateTime: function() {
-      function getTime() {
+      const getTime = () => {
         let cd = new Date();
         this.time =
           this.zeroPadding(cd.getHours(), 2) +
           ":" +
           this.zeroPadding(cd.getMinutes(), 2);
-      }
+      };
 
       setInterval(getTime, 1000);
       getTime();
