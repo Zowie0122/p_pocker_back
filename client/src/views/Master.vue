@@ -15,7 +15,7 @@
       >Show Votes</b-button
     >
     <!--When there is no one voted, the button is grey and not active -->
-    <b-button v-if="!okToShowVotes" class="m-3">Show Votes</b-button>
+    <b-button v-if="!okToShowVotes" class="m-3" disabled>Show Votes</b-button>
     <b-button class="m-3" variant="warning" @click="resetVotesHandler"
       >Reset Votes</b-button
     >
@@ -37,7 +37,7 @@ export default {
 
   components: {
     VoteStatus,
-    PlayerList,
+    PlayerList
   },
 
   data: function() {
@@ -47,7 +47,7 @@ export default {
       uid: "",
       sessionStatus: "",
       okToShowVotes: false,
-      socket: io("http://localhost:5000"),
+      socket: io("http://localhost:5000")
     };
   },
 
@@ -75,7 +75,7 @@ export default {
     },
     resetVotesHandler: function() {
       this.socket.emit("resetVotes", { sessionID: this.sessionID });
-    },
+    }
   },
 
   mounted() {
@@ -84,7 +84,7 @@ export default {
       this.okToShowVotes = sessionObject.okToShowVotes;
       this.votesInfo = removeMaster(this.uid, sessionObject.votesInfo);
     });
-  },
+  }
 };
 </script>
 

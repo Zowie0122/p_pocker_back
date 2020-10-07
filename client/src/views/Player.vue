@@ -8,11 +8,12 @@
       <player-list :votes_info="votesInfo" />
     </div>
 
-    <template v-if="sessionStatus === 'Vote in progress'">
+    <template v-if="sessionStatus === 'Vote in progress'" class="m-3">
       Your Vote:
-      <div>
+      <div class="m-3">
         <b-button
-          variant="light"
+          variant="dark"
+          class="m-1"
           size="lg"
           v-for="(card, index) in cards"
           :key="index"
@@ -43,7 +44,7 @@ export default {
 
   components: {
     VoteStatus,
-    PlayerList,
+    PlayerList
   },
 
   data: function() {
@@ -56,7 +57,7 @@ export default {
       cardDeck: [],
       vote: "no vote",
       isMasterLeft: false,
-      socket: io("http://localhost:5000"),
+      socket: io("http://localhost:5000")
     };
   },
 
@@ -115,7 +116,7 @@ export default {
         }
       }
       return result;
-    },
+    }
   },
 
   methods: {
@@ -124,10 +125,10 @@ export default {
       this.socket.emit("vote", {
         sessionID: this.sessionID,
         uid: this.uid,
-        card: this.vote,
+        card: this.vote
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -43,4 +43,4 @@ Multiple sessions at the same time
 
 ## Customization
 
-Under root folder, there is a file called cardDeck.js where you can set up your vote options.
+Under root folder, there is a file called cardDeck.js where you can set up your own vote options.

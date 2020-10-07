@@ -1,9 +1,9 @@
 // back-end utility functions
 
+// Session ID should be a random string of lowercase Latin alphabet letters (a-z) separated into three groups of 3, 4 and 3 characters, respectively, e.g. abc-defg-hjk
+// (same as Google Hangouts video call IDs). Session ID should be generated on the backend side. Backend must keep track of all active session IDs and ensure their
+// uniqueness.
 function sessionIdGenerator(sessionID_array) {
-  // Session ID should be a random string of lowercase Latin alphabet letters (a-z) separated into three groups of 3, 4 and 3 characters, respectively, e.g. abc-defg-hjk
-  // (same as Google Hangouts video call IDs). Session ID should be generated on the backend side. Backend must keep track of all active session IDs and ensure their
-  // uniqueness.
   const characters = "abcdefghijklmnopqrstuvwxyz";
 
   function randomlettersGenerator(number) {
@@ -25,11 +25,12 @@ function sessionIdGenerator(sessionID_array) {
   return sessionIdGenerator(sessionID_array);
 }
 
+// check if a sessionID is in used
 function sessionIDDuplicated(sessionID_array, sessionID) {
-  //check if a sessionID is in used
   return sessionID_array.includes(sessionID);
 }
 
+// reveal / hide votes result when send back to client
 function formatVotes(object) {
   const copy = JSON.parse(JSON.stringify(object.votesInfo));
   if (object.status === "Vote complete") {
