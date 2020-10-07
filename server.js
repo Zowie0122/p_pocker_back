@@ -10,10 +10,11 @@ const {
 } = require("./utils");
 const cards = require("./cardDeck");
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
@@ -140,12 +141,12 @@ io.on("connection", (socket) => {
   });
 });
 
-// for production deployment
+// for production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
+  app.use(express.static("client/dist"));
   const path = require("path");
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
   });
 }
 
