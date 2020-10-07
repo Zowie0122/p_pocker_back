@@ -12,12 +12,16 @@ cd client
 yarn install
 ```
 
+## Deployed Version
+
+👉 https://planningpocker.herokuapp.com/welcome
+
 ## Run on localhost
 
 To Start the server
 
 ```bash
-yarn start
+yarn dev
 ```
 
 To Start the front-end
@@ -26,6 +30,8 @@ To Start the front-end
 cd client
 yarn serve
 ```
+
+open http://localhost:8080/welcome
 
 ## Demo
 

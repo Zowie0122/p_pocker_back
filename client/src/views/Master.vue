@@ -37,7 +37,7 @@ export default {
 
   components: {
     VoteStatus,
-    PlayerList
+    PlayerList,
   },
 
   data: function() {
@@ -47,7 +47,7 @@ export default {
       uid: "",
       sessionStatus: "",
       okToShowVotes: false,
-      socket: io("/")
+      socket: io("http://localhost:5000"),
     };
   },
 
@@ -75,7 +75,7 @@ export default {
     },
     resetVotesHandler: function() {
       this.socket.emit("resetVotes", { sessionID: this.sessionID });
-    }
+    },
   },
 
   mounted() {
@@ -84,7 +84,7 @@ export default {
       this.okToShowVotes = sessionObject.okToShowVotes;
       this.votesInfo = removeMaster(this.uid, sessionObject.votesInfo);
     });
-  }
+  },
 };
 </script>
 

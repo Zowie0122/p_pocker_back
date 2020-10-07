@@ -44,7 +44,7 @@ export default {
 
   components: {
     VoteStatus,
-    PlayerList
+    PlayerList,
   },
 
   data: function() {
@@ -57,7 +57,7 @@ export default {
       cardDeck: [],
       vote: "no vote",
       isMasterLeft: false,
-      socket: io("/")
+      socket: io("http://localhost:5000"),
     };
   },
 
@@ -117,7 +117,7 @@ export default {
         }
       }
       return result;
-    }
+    },
   },
 
   methods: {
@@ -126,10 +126,10 @@ export default {
       this.socket.emit("vote", {
         sessionID: this.sessionID,
         uid: this.uid,
-        card: this.vote
+        card: this.vote,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
