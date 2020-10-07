@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     updateTime: function() {
-      function getTime() {
+      const getTime = () => {
         let cd = new Date();
         this.time =
           this.zeroPadding(cd.getHours(), 2) +
